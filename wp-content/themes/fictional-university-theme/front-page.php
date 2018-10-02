@@ -49,7 +49,7 @@
                 ?>
             </span>
             <span class="event-summary__day"><?php echo $the_event_date->format( 'd' ); ?></span>  
-          </a>
+                 </a>
                 <div class="event-summary__content">
                     <h5 class="event-summary__title headline headline--tiny">
                         <a href="<?php the_permalink(); ?>">
@@ -62,7 +62,8 @@
                     } else {
                         echo wp_trim_words(get_the_content(), 18);
                     }
-                        ?> <a href="<?php the_permalink(); ?>" class="nu gray">Learn more</a></p>
+                        ?>
+                        <a href="<?php the_permalink(); ?>" class="nu gray">Learn more</a></p>
                 </div>
             </div>
             <?php }
