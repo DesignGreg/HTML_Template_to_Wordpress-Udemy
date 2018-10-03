@@ -15,8 +15,7 @@ get_header(); ?>
             <p><a class="metabox__blog-home-link" href="<?php echo get_post_type_archive_link('event'); ?>"><i class="fa fa-home" aria-hidden="true"></i> Events Home </a> <span class="metabox__main"><?php the_title(); ?> </span></p>
         </div>
 
-        <div class="generic_content">
-            <?php the_content(); ?>
+        <div class="generic_content"><?php the_content(); ?></div>
 
             <?php
                 $relatedPrograms = get_field('related_programs');
@@ -38,8 +37,6 @@ get_header(); ?>
             
         
             ?>
-
-        </div>
 
     </div>
 
