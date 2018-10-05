@@ -41,7 +41,7 @@ get_header(); ?>
         echo '<ul class="professor-cards">';
         while($relatedProfessors->have_posts()) {
             $relatedProfessors -> the_post(); ?>
-            <li clas="professor-card__list-item">
+            <li class="professor-card__list-item">
                 <a class="professor-card" href="<?php the_permalink(); ?>">
                     <img class="professor-card__image" src="<?php the_post_thumbnail_url('professorLandscape') ?>">
                     <span class="professor-card__name"> <?php the_title(); ?></span>

@@ -33,19 +33,22 @@ function universitySearchResults($data) {
             if (get_post_type() == 'post' OR get_post_type() == 'page') {
                array_push($results['generalInfo'], array(
                 'title' => get_the_title(),
-                'url' => get_the_permalink()
+                'url' => get_the_permalink(),
+                'postType' => get_post_type(),
+                'authorName' => get_the_author()
             )); 
             }
             if (get_post_type() == 'professor') {
                array_push($results['professors'], array(
                 'title' => get_the_title(),
-                'url' => get_the_permalink()
+                'url' => get_the_permalink(),
+                'image' => get_the_post_thumbnail_url(0, 'professorLandscape')
             )); 
             }
             if (get_post_type() == 'program') {
                array_push($results['programs'], array(
                 'title' => get_the_title(),
-                'url' => get_the_permalink()
+                'url' => get_the_permalink(),
             )); 
             }
             if (get_post_type() == 'campus') {
@@ -55,9 +58,24 @@ function universitySearchResults($data) {
             )); 
             }
             if (get_post_type() == 'event') {
+                
+               $the_event_date = get_field( 'event_date', false, false );
+                
+               $description = null;
+               if (has_excerpt()) {
+                    $description = get_the_excerpt();
+               } else {
+                    $description = wp_trim_words(get_the_content(), 18);
+               }
+                
+               $the_event_date = new DateTime( $the_event_date );
+                
                array_push($results['events'], array(
                 'title' => get_the_title(),
-                'url' => get_the_permalink()
+                'url' => get_the_permalink(),
+                'month' => $the_event_date->format('M'),
+                'day' => $the_event_date->format('d'),
+                'description' => $description
             )); 
             }
         }
@@ -100,14 +118,18 @@ function pageBanner ($args = NULL) {
     ?>
     <div class="page-banner">
         <div class="page-banner__bg-image" style="background-image: url(<?php echo $args['photo'] ?>)"></div>
-            <div class="page-banner__content container container--narrow">
-            <h1 class="page-banner__title"><?php echo $args['title'] ?></h1>
+        <div class="page-banner__content container container--narrow">
+            <h1 class="page-banner__title">
+                <?php echo $args['title'] ?>
+            </h1>
             <div class="page-banner__intro">
-                <p><?php echo $args['subtitle'] ?></p>
+                <p>
+                    <?php echo $args['subtitle'] ?>
+                </p>
             </div>
         </div>
     </div>
-<?php }
+    <?php }
 
 
 
