@@ -309,6 +309,18 @@ function ourLoginTitle() {
     return get_bloginfo('name');
 }
 
-add_filter('login_headertitle', 'ourLoginTitle')
+add_filter('login_headertitle', 'ourLoginTitle');
+    
+// Force note posts to be private
+
+function makeNotePrivate($data) {
+  if($data['post_type'] == 'note' AND $data['post_status'] != 'trash') {
+    $data['post_status'] = "private";
+  }
+  
+  return $data;
+}
+
+add_filter('wp_insert_post_data', 'makeNotePrivate');
 
 ?>

@@ -170,19 +170,38 @@ class MyNotes {
     }
     
     events() {
-        jQuery(".delete-note").on("click", this.deleteNote);
-        jQuery(".edit-note").on("click", this.editNote);
-    }
+        jQuery("#my-notes").on("click", ".delete-note", this.deleteNote);
+        jQuery("#my-notes").on("click", ".edit-note", this.editNote.bind(this));
+        jQuery("#my-notes").on("click", ".update-note", this.updateNote.bind(this));
+        jQuery(".submit-note").on("click", this.createNote.bind(this));
+  }
     
-    // MEthods
+    // Methods
     
     editNote(e) {
         var thisNote = jQuery(e.target).parents("li");
         
-        thisNote.find(".note-title-field, .note-body-field").removeAttr("readonly").addClass("note-active-field");
-        thisNote.find(".update-note").addClass("update-note--visible");
+        if (thisNote.data("state") == "editable") {
+            this.makeNoteReadOnly(thisNote);
+        } else {
+            this.makeNoteEditable(thisNote);
+        }
     }
     
+    makeNoteEditable(thisNote) {
+        thisNote.find(".edit-note").html('<i class="fa fa-times" aria-hidden="true"></i> Cancel');
+        thisNote.find(".note-title-field, .note-body-field").removeAttr("readonly").addClass("note-active-field");
+        thisNote.find(".update-note").addClass("update-note--visible");
+        thisNote.data("state", "editable");
+    }
+    
+    makeNoteReadOnly(thisNote) {   
+        thisNote.find(".edit-note").html('<i class="fa fa-pencil" aria-hidden="true"></i> Edit');
+        thisNote.find(".note-title-field, .note-body-field").attr("readonly", "readonly").removeClass("note-active-field");
+        thisNote.find(".update-note").removeClass("update-note--visible");
+        thisNote.data("state", "cancel");
+        
+    }
     
     deleteNote(e) {
         var thisNote = jQuery(e.target).parents("li");
@@ -203,6 +222,69 @@ class MyNotes {
             }
         });
     }
+    
+    updateNote(e) {
+        var thisNote = jQuery(e.target).parents("li");
+        
+        var ourUpdatedPost = {
+            'title': thisNote.find("note-title-field").val(),
+            'content': thisNote.find(".note-body-field").val()
+        }
+        
+        jQuery.ajax({
+            beforeSend: (xhr) => {
+                xhr.setRequestHeader('X-WP-Nonce', universityData.nonce);
+            },
+            url: universityData.root_url + '/wp-json/wp/v2/note/' + thisNote.data('id'),
+            type: 'POST',
+            data: ourUpdatedPost,
+            success: (response) => {
+                this.makeNoteReadOnly(thisNote);
+                console.log('Congrats');
+                console.log(response);
+            },
+            error: (response) => {
+                console.log('Sorry');
+                console.log(response);
+            }
+        });
+    }
+    
+    createNote(e) {
+    var ourNewPost = {
+      'title': jQuery(".new-note-title").val(),
+      'content': jQuery(".new-note-body").val(),
+      'status': 'publish'
+    }
+    
+    jQuery.ajax({
+      beforeSend: (xhr) => {
+        xhr.setRequestHeader('X-WP-Nonce', universityData.nonce);
+      },
+      url: universityData.root_url + '/wp-json/wp/v2/note/',
+      type: 'POST',
+      data: ourNewPost,
+      success: (response) => {
+        jQuery(".new-note-title, .new-note-body").val('');
+        jQuery(`
+          <li data-id="${response.id}">
+            <input readonly class="note-title-field" value="${response.title.raw}">
+            <span class="edit-note"><i class="fa fa-pencil" aria-hidden="true"></i> Edit</span>
+            <span class="delete-note"><i class="fa fa-trash-o" aria-hidden="true"></i> Delete</span>
+            <textarea readonly class="note-body-field">${response.content.raw}</textarea>
+            <span class="update-note btn btn--blue btn--small"><i class="fa fa-arrow-right" aria-hidden="true"></i> Save</span>
+          </li>
+          `).prependTo("#my-notes").hide().slideDown();
+
+        console.log("Congrats");
+        console.log(response);
+      },
+      error: (response) => {
+        console.log("Sorry");
+        console.log(response);
+      }
+    });
+  }
 }
 
 var myNotes = new MyNotes;

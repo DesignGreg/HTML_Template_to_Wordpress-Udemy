@@ -71,6 +71,8 @@
        
     // Note Post Type
     register_post_type('note', array(
+        'capability_type' => 'note',
+        'map_meta_cap' => true,
         'show_in_rest' => true,
         'supports' => array('title', 'editor'),
         'public' => false,
