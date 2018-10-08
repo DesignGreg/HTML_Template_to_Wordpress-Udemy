@@ -161,18 +161,48 @@ class Search {
 
 var search = new Search();
 
-// export default Search;
 
-//<div class="search-overlay">
-//    <div class="search-overlay__top">
-//        <div class="container">
-//            <i class="fa fa-search search-overlay__icon" aria-hidden="true"></i>
-//            <input type="text" id="search-term" class="search-term" placeholder="What are you looking for">
-//            <i class="fa fa-window-close search-overlay__close" aria-hidden="true"></i>
-//        </div>
-//    </div>
-//    
-//    <div class="container">
-//        <div id="search-overlay__results"></div>
-//    </div>
-//</div>
+// MY NOTES
+
+class MyNotes {
+    constructor() {
+        this.events();
+    }
+    
+    events() {
+        jQuery(".delete-note").on("click", this.deleteNote);
+        jQuery(".edit-note").on("click", this.editNote);
+    }
+    
+    // MEthods
+    
+    editNote(e) {
+        var thisNote = jQuery(e.target).parents("li");
+        
+        thisNote.find(".note-title-field, .note-body-field").removeAttr("readonly").addClass("note-active-field");
+        thisNote.find(".update-note").addClass("update-note--visible");
+    }
+    
+    
+    deleteNote(e) {
+        var thisNote = jQuery(e.target).parents("li");
+        jQuery.ajax({
+            beforeSend: (xhr) => {
+                xhr.setRequestHeader('X-WP-Nonce', universityData.nonce);
+            },
+            url: universityData.root_url + '/wp-json/wp/v2/note/' + thisNote.data('id'),
+            type: 'DELETE',
+            success: (response) => {
+                thisNote.slideUp();
+                console.log('Congrats');
+                console.log(response);
+            },
+            error: (response) => {
+                console.log('Sorry');
+                console.log(response);
+            }
+        });
+    }
+}
+
+var myNotes = new MyNotes;
